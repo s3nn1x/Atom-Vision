@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Визуализация Атома — расширенное окно</title>
+<title>Атом Визуализация</title>
 <style>
   body {
     margin: 0; background: #121212;
@@ -13,38 +13,40 @@
   }
   .container {
     background: #2e2e2e;
-    border-radius: 20px;
-    width: 880px; /* увеличена ширина */
-    padding: 30px 40px;
+    border-radius: 24px;
+    width: 720px;
+    padding: 32px 40px;
     box-sizing: border-box;
   }
   h1 {
-    margin: 0 0 10px 0;
+    margin: 0 0 12px 0;
+    font-weight: 700;
+    font-size: 32px;
     text-align: center;
-    font-weight: 600;
-    font-size: 28px;
+    color: #fff;
   }
   .author {
     text-align: center;
     font-weight: 300;
     font-size: 14px;
-    color: rgba(255 255 255 / 0.3);
-    margin-bottom: 30px;
+    color: rgba(255 255 255 / 0.35);
+    margin-bottom: 36px;
   }
   input[type=number] {
     display: block;
-    margin: 0 auto 14px auto;
-    width: 220px;
-    padding: 12px 14px;
-    border-radius: 12px;
+    margin: 0 auto 20px auto;
+    width: 260px;
+    padding: 12px 18px;
+    border-radius: 14px;
     border: none;
-    font-size: 17px;
+    font-size: 18px;
     background: #1f2124;
-    color: #ddd;
+    color: #ccc;
     text-align: center;
-    outline-offset: 2px;
+    outline-offset: 3px;
     outline-color: #555;
     transition: outline-color 0.3s ease;
+    user-select: text;
   }
   input[type=number]:focus {
     outline-color: #4caf50;
@@ -54,67 +56,68 @@
     text-align: center;
     font-size: 13px;
     color: #999;
-    margin-bottom: 32px;
+    margin-bottom: 36px;
     user-select: none;
   }
   .flex-row {
     display: flex;
-    gap: 40px;
+    gap: 48px;
     justify-content: center;
     align-items: flex-start;
   }
   .atom-visualization {
     position: relative;
-    width: 480px;  /* увеличена ширина */
-    height: 480px; /* увеличена высота */
-    background: #252a2f;
-    border-radius: 24px;
-    box-shadow: inset 0 0 12px #111;
+    width: 400px;
+    height: 400px;
+    background: #22272d;
+    border-radius: 32px;
+    box-shadow: inset 0 0 20px #111;
   }
   .nucleus {
     position: absolute;
     top: 50%; left: 50%;
-    width: 100px; height: 100px; /* увеличено ядро */
-    background: radial-gradient(circle at center, #f44336 0%, #b71c1c 80%);
+    width: 90px; height: 90px;
+    background: radial-gradient(circle at center, #f44336 0%, #b71c1c 90%);
     border-radius: 50%;
-    box-shadow: 0 0 30px #f44336bb;
+    box-shadow: 0 0 32px #f44336cc;
     transform: translate(-50%, -50%);
-    z-index: 10;
+    z-index: 20;
   }
   .orbit {
     position: absolute;
-    border: 2px solid rgba(255,255,255,0.15);
     border-radius: 50%;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
+    background: none;
+    border: 1.8px solid rgba(255,255,255,0.15);
   }
   .electron {
     position: absolute;
-    width: 22px; height: 22px; /* увеличены электроны */
+    width: 14px; height: 14px;
     background: #4caf50;
     border-radius: 50%;
-    box-shadow: 0 0 16px #4caf50dd;
+    box-shadow: 0 0 14px #4caf50dd;
   }
   .info-panel {
-    width: 360px; /* увеличена ширина */
+    width: 280px;
     background: #1f2226;
-    border-radius: 24px;
-    padding: 24px 28px;
+    border-radius: 28px;
+    padding: 28px 32px;
     font-size: 14px;
-    line-height: 1.4;
+    line-height: 1.5;
     color: #ccc;
     user-select: text;
-    max-height: 480px; /* увеличена высота */
+    max-height: 400px;
     overflow-y: auto;
   }
   .info-panel strong {
-    font-size: 18px;
+    font-size: 20px;
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     color: #fff;
   }
   .info-section {
-    margin-bottom: 14px;
+    margin-bottom: 16px;
   }
 </style>
 </head>
@@ -137,8 +140,9 @@
   const input = document.getElementById('elementInput');
   const infoBox = document.getElementById('elementInfo');
 
-  const shellsCapacity = [2,8,18,32,18,8,2];
-  const baseRadius = 65; // увеличен базовый радиус
+  // Более детальное распределение для 7 оболочек с количеством электронов
+  const shellsCapacity = [2, 8, 18, 32, 32, 18, 8]; 
+  const baseRadius = 55; // базовый радиус для первой орбиты
 
   function clearAtom() {
     container.querySelectorAll('.orbit').forEach(o => o.remove());
@@ -175,9 +179,10 @@
       container.appendChild(orbit);
 
       for(let n=0; n<count; n++) {
+        // Сдвиг угла для красивого расположения
         const angle = (2*Math.PI/count)*n - Math.PI/2;
-        const x = centerX + radius * Math.cos(angle) - 11;
-        const y = centerY + radius * Math.sin(angle) - 11;
+        const x = centerX + radius * Math.cos(angle) - 7;
+        const y = centerY + radius * Math.sin(angle) - 7;
         const electron = createElectron(x, y);
         container.appendChild(electron);
       }
