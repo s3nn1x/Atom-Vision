@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Визуализация Атома — ровно</title>
+<title>Визуализация Атома — расширенное окно</title>
 <style>
   body {
     margin: 0; background: #121212;
@@ -14,7 +14,7 @@
   .container {
     background: #2e2e2e;
     border-radius: 20px;
-    width: 680px;
+    width: 880px; /* увеличена ширина */
     padding: 30px 40px;
     box-sizing: border-box;
   }
@@ -65,8 +65,8 @@
   }
   .atom-visualization {
     position: relative;
-    width: 320px;
-    height: 320px;
+    width: 480px;  /* увеличена ширина */
+    height: 480px; /* увеличена высота */
     background: #252a2f;
     border-radius: 24px;
     box-shadow: inset 0 0 12px #111;
@@ -74,10 +74,10 @@
   .nucleus {
     position: absolute;
     top: 50%; left: 50%;
-    width: 70px; height: 70px;
+    width: 100px; height: 100px; /* увеличено ядро */
     background: radial-gradient(circle at center, #f44336 0%, #b71c1c 80%);
     border-radius: 50%;
-    box-shadow: 0 0 20px #f44336bb;
+    box-shadow: 0 0 30px #f44336bb;
     transform: translate(-50%, -50%);
     z-index: 10;
   }
@@ -90,13 +90,13 @@
   }
   .electron {
     position: absolute;
-    width: 16px; height: 16px;
+    width: 22px; height: 22px; /* увеличены электроны */
     background: #4caf50;
     border-radius: 50%;
-    box-shadow: 0 0 12px #4caf50dd;
+    box-shadow: 0 0 16px #4caf50dd;
   }
   .info-panel {
-    width: 280px;
+    width: 360px; /* увеличена ширина */
     background: #1f2226;
     border-radius: 24px;
     padding: 24px 28px;
@@ -104,7 +104,7 @@
     line-height: 1.4;
     color: #ccc;
     user-select: text;
-    max-height: 320px;
+    max-height: 480px; /* увеличена высота */
     overflow-y: auto;
   }
   .info-panel strong {
@@ -138,7 +138,7 @@
   const infoBox = document.getElementById('elementInfo');
 
   const shellsCapacity = [2,8,18,32,18,8,2];
-  const baseRadius = 45;
+  const baseRadius = 65; // увеличен базовый радиус
 
   function clearAtom() {
     container.querySelectorAll('.orbit').forEach(o => o.remove());
@@ -170,14 +170,14 @@
     for(let i=0; i<shellsCapacity.length && remaining>0; i++) {
       const count = Math.min(remaining, shellsCapacity[i]);
       remaining -= count;
-      const radius = baseRadius + i*30;
+      const radius = baseRadius + i*40;
       const orbit = createOrbit(radius);
       container.appendChild(orbit);
 
       for(let n=0; n<count; n++) {
-        const angle = (2*Math.PI/count)*n - Math.PI/2; // смещаем чтобы первый сверху
-        const x = centerX + radius * Math.cos(angle) - 8;
-        const y = centerY + radius * Math.sin(angle) - 8;
+        const angle = (2*Math.PI/count)*n - Math.PI/2;
+        const x = centerX + radius * Math.cos(angle) - 11;
+        const y = centerY + radius * Math.sin(angle) - 11;
         const electron = createElectron(x, y);
         container.appendChild(electron);
       }
@@ -221,7 +221,7 @@
       elements = data;
       input.addEventListener('input', () => {
         let val = +input.value;
-        if(!val || val<1 || val>112) {
+        if(!val || val < 1 || val > 112) {
           infoBox.textContent = 'Введите число от 1 до 112';
           drawAtom(0);
           return;
