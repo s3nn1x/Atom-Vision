@@ -3,37 +3,26 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Визуализация Атома</title>
+<title>Визуализация Атома — ровно</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
-  * {
-    box-sizing: border-box;
-  }
   body {
-    margin: 0;
-    background-color: #121212;
-    font-family: 'Roboto Mono', monospace;
-    color: #ddd;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-    padding: 40px 20px;
+    margin: 0; background: #121212;
+    font-family: Arial, sans-serif;
+    color: #eee;
+    display: flex; justify-content: center; padding: 40px 20px;
   }
   .container {
-    background: #33383f;
-    border-radius: 16px;
+    background: #2e2e2e;
+    border-radius: 20px;
     width: 680px;
-    padding: 30px 40px 40px 40px;
-    box-shadow: 0 0 40px #1a1a1a;
-    user-select: none;
+    padding: 30px 40px;
+    box-sizing: border-box;
   }
   h1 {
-    margin: 0 0 8px 0;
+    margin: 0 0 10px 0;
+    text-align: center;
     font-weight: 600;
     font-size: 28px;
-    text-align: center;
-    color: #fff;
   }
   .author {
     text-align: center;
@@ -175,17 +164,21 @@
   function drawAtom(electrons) {
     clearAtom();
     let remaining = electrons;
+    const centerX = container.clientWidth / 2;
+    const centerY = container.clientHeight / 2;
+
     for(let i=0; i<shellsCapacity.length && remaining>0; i++) {
       const count = Math.min(remaining, shellsCapacity[i]);
       remaining -= count;
       const radius = baseRadius + i*30;
       const orbit = createOrbit(radius);
       container.appendChild(orbit);
+
       for(let n=0; n<count; n++) {
-        const angle = (2*Math.PI/count)*n - Math.PI/2;
-        const x = radius + radius*Math.cos(angle) - 8;
-        const y = radius + radius*Math.sin(angle) - 8;
-        const electron = createElectron(x,y);
+        const angle = (2*Math.PI/count)*n - Math.PI/2; // смещаем чтобы первый сверху
+        const x = centerX + radius * Math.cos(angle) - 8;
+        const y = centerY + radius * Math.sin(angle) - 8;
+        const electron = createElectron(x, y);
         container.appendChild(electron);
       }
     }
