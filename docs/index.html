@@ -3,105 +3,129 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Визуализация Атома 2D</title>
+<title>Визуализация Атома</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+  * {
+    box-sizing: border-box;
+  }
   body {
     margin: 0;
-    background: #121212;
-    font-family: Arial, sans-serif;
-    color: #eee;
+    background-color: #121212;
+    font-family: 'Roboto Mono', monospace;
+    color: #ddd;
     display: flex;
     justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
     padding: 40px 20px;
   }
   .container {
-    background: #2e2e2e;
+    background: #33383f;
     border-radius: 16px;
-    width: 320px;
-    padding: 20px;
-    box-sizing: border-box;
+    width: 680px;
+    padding: 30px 40px 40px 40px;
+    box-shadow: 0 0 40px #1a1a1a;
     user-select: none;
   }
   h1 {
-    margin: 0 0 6px 0;
+    margin: 0 0 8px 0;
+    font-weight: 600;
+    font-size: 28px;
     text-align: center;
+    color: #fff;
   }
   .author {
     text-align: center;
+    font-weight: 300;
     font-size: 14px;
     color: rgba(255 255 255 / 0.3);
-    margin-bottom: 20px;
+    margin-bottom: 30px;
   }
   input[type=number] {
-    width: 100%;
-    padding: 10px 14px;
-    border-radius: 8px;
+    display: block;
+    margin: 0 auto 14px auto;
+    width: 220px;
+    padding: 12px 14px;
+    border-radius: 12px;
     border: none;
-    font-size: 16px;
-    background: #1e1e1e;
+    font-size: 17px;
+    background: #1f2124;
     color: #ddd;
-    margin-bottom: 6px;
+    text-align: center;
     outline-offset: 2px;
-    outline-color: #666;
+    outline-color: #555;
+    transition: outline-color 0.3s ease;
   }
   input[type=number]:focus {
     outline-color: #4caf50;
-    background: #272727;
+    background: #272b30;
   }
   .hint {
+    text-align: center;
     font-size: 13px;
     color: #999;
-    margin-bottom: 18px;
+    margin-bottom: 32px;
     user-select: none;
+  }
+  .flex-row {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    align-items: flex-start;
   }
   .atom-visualization {
     position: relative;
-    width: 280px;
-    height: 280px;
-    margin: 0 auto 30px auto;
+    width: 320px;
+    height: 320px;
+    background: #252a2f;
+    border-radius: 24px;
+    box-shadow: inset 0 0 12px #111;
   }
   .nucleus {
     position: absolute;
     top: 50%; left: 50%;
-    width: 50px; height: 50px;
+    width: 70px; height: 70px;
     background: radial-gradient(circle at center, #f44336 0%, #b71c1c 80%);
     border-radius: 50%;
-    box-shadow: 0 0 15px #f44336cc;
+    box-shadow: 0 0 20px #f44336bb;
     transform: translate(-50%, -50%);
     z-index: 10;
   }
   .orbit {
     position: absolute;
-    border: 1.3px solid rgba(255,255,255,0.25);
+    border: 2px solid rgba(255,255,255,0.15);
     border-radius: 50%;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
   }
   .electron {
     position: absolute;
-    width: 12px; height: 12px;
+    width: 16px; height: 16px;
     background: #4caf50;
     border-radius: 50%;
-    box-shadow: 0 0 8px #4caf50cc;
+    box-shadow: 0 0 12px #4caf50dd;
   }
-  .info {
-    background: #1a1a1a;
-    border-radius: 12px;
-    padding: 14px 18px;
-    font-size: 13px;
+  .info-panel {
+    width: 280px;
+    background: #1f2226;
+    border-radius: 24px;
+    padding: 24px 28px;
+    font-size: 14px;
     line-height: 1.4;
-    max-height: 300px;
-    overflow-y: auto;
-    white-space: pre-line;
+    color: #ccc;
     user-select: text;
+    max-height: 320px;
+    overflow-y: auto;
   }
-  .info strong {
+  .info-panel strong {
     font-size: 18px;
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
+    color: #fff;
   }
-  .info .section {
-    margin-bottom: 10px;
+  .info-section {
+    margin-bottom: 14px;
   }
 </style>
 </head>
@@ -111,10 +135,12 @@
   <div class="author">Арсений 9л</div>
   <input id="elementInput" type="number" min="1" max="112" placeholder="Введите номер элемента (1 - 112)" />
   <div class="hint">От скольки до скольки элементов (1 - 112)</div>
-  <div class="atom-visualization" aria-label="Атом">
-    <div class="nucleus"></div>
+  <div class="flex-row">
+    <div class="atom-visualization" aria-label="Атом">
+      <div class="nucleus"></div>
+    </div>
+    <div class="info-panel" id="elementInfo">Введите номер элемента, чтобы увидеть информацию.</div>
   </div>
-  <div class="info" id="elementInfo">Введите номер элемента, чтобы увидеть информацию.</div>
 </div>
 
 <script>
@@ -123,18 +149,18 @@
   const infoBox = document.getElementById('elementInfo');
 
   const shellsCapacity = [2,8,18,32,18,8,2];
-  const baseRadius = 35;
+  const baseRadius = 45;
 
   function clearAtom() {
-    container.querySelectorAll('.orbit').forEach(e => e.remove());
+    container.querySelectorAll('.orbit').forEach(o => o.remove());
     container.querySelectorAll('.electron').forEach(e => e.remove());
   }
 
   function createOrbit(radius) {
     const orbit = document.createElement('div');
     orbit.classList.add('orbit');
-    orbit.style.width = `${radius * 2}px`;
-    orbit.style.height = `${radius * 2}px`;
+    orbit.style.width = `${radius*2}px`;
+    orbit.style.height = `${radius*2}px`;
     return orbit;
   }
 
@@ -149,26 +175,24 @@
   function drawAtom(electrons) {
     clearAtom();
     let remaining = electrons;
-    for (let i=0; i<shellsCapacity.length && remaining>0; i++) {
+    for(let i=0; i<shellsCapacity.length && remaining>0; i++) {
       const count = Math.min(remaining, shellsCapacity[i]);
       remaining -= count;
-      const radius = baseRadius + i*28;
-
+      const radius = baseRadius + i*30;
       const orbit = createOrbit(radius);
       container.appendChild(orbit);
-
       for(let n=0; n<count; n++) {
-        const angle = (2 * Math.PI / count) * n - Math.PI / 2;
-        const x = radius + radius * Math.cos(angle) - 6;
-        const y = radius + radius * Math.sin(angle) - 6;
-        const electron = createElectron(x, y);
+        const angle = (2*Math.PI/count)*n - Math.PI/2;
+        const x = radius + radius*Math.cos(angle) - 8;
+        const y = radius + radius*Math.sin(angle) - 8;
+        const electron = createElectron(x,y);
         container.appendChild(electron);
       }
     }
   }
 
   function formatSection(title, content) {
-    return `<div class="section"><strong>${title}</strong>${content}</div>`;
+    return `<div class="info-section"><strong>${title}</strong>${content}</div>`;
   }
 
   let elements = {};
@@ -182,9 +206,9 @@
     const e = elements[num];
     let html = '';
     html += `<strong>${e.name} (${e.symbol})</strong>`;
-    html += formatSection('Атомный номер (Z): ', e.atomicNumber);
-    html += formatSection('Атомная масса (A): ', e.atomicMass);
-    html += formatSection('Период и группа: ', `Период ${e.period}, Группа ${e.group || '—'}`);
+    html += formatSection('Атомный номер (Z):', e.atomicNumber);
+    html += formatSection('Атомная масса (A):', e.atomicMass);
+    html += formatSection('Период и группа:', `Период ${e.period}, Группа ${e.group || '—'}`);
     html += formatSection('Электронная конфигурация:', e.electronConfiguration);
     html += formatSection('Физические свойства:', e.physicalProperties);
     html += formatSection('Химические свойства:', e.chemicalProperties);
@@ -203,8 +227,8 @@
     .then(data => {
       elements = data;
       input.addEventListener('input', () => {
-        const val = +input.value;
-        if (!val || val < 1 || val > 112) {
+        let val = +input.value;
+        if(!val || val<1 || val>112) {
           infoBox.textContent = 'Введите число от 1 до 112';
           drawAtom(0);
           return;
